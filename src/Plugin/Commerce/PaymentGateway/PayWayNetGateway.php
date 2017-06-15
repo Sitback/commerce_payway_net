@@ -35,151 +35,16 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
      */
     public function defaultConfiguration()
     {
-        // TODO: Implement defaultConfiguration() method.
-    }
-
-    /**
-     * Calculates dependencies for the configured plugin.
-     *
-     * Dependencies are saved in the plugin's configuration entity and are used to
-     * determine configuration synchronization order. For example, if the plugin
-     * integrates with specific user roles, this method should return an array of
-     * dependencies listing the specified roles.
-     *
-     * @return array
-     *   An array of dependencies grouped by type (config, content, module,
-     *   theme). For example:
-     * @code
-     *   array(
-     *     'config' => array('user.role.anonymous', 'user.role.authenticated'),
-     *     'content' => array('node:article:f0a189e6-55fb-47fb-8005-5bef81c44d6d'),
-     *     'module' => array('node', 'user'),
-     *     'theme' => array('seven'),
-     *   );
-     * @endcode
-     *
-     * @see \Drupal\Core\Config\Entity\ConfigDependencyManager
-     * @see \Drupal\Core\Entity\EntityInterface::getConfigDependencyName()
-     */
-    public function calculateDependencies()
-    {
-        // TODO: Implement calculateDependencies() method.
-    }
-
-    /**
-     * Gets the derivative_id of the plugin instance.
-     *
-     * @return string|null
-     *   The derivative_id of the plugin instance NULL otherwise.
-     */
-    public function getDerivativeId()
-    {
-        // TODO: Implement getDerivativeId() method.
-    }
-
-    /**
-     * Gets the URL to the "notify" page.
-     *
-     * When supported, this page is called asynchronously to notify the site of
-     * payment changes (new payment or capture/void/refund of an existing one).
-     *
-     * @return \Drupal\Core\Url
-     *   The "notify" page url.
-     */
-    public function getNotifyUrl()
-    {
-        // TODO: Implement getNotifyUrl() method.
-    }
-
-    /**
-     * Processes the "return" request.
-     *
-     * @param \Drupal\commerce_order\Entity\OrderInterface $order
-     *   The order.
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   The request.
-     *
-     * @throws \Drupal\commerce_payment\Exception\PaymentGatewayException
-     *   Thrown when the request is invalid or the payment failed.
-     */
-    public function onReturn(OrderInterface $order, Request $request)
-    {
-        // TODO: Implement onReturn() method.
-    }
-
-    /**
-     * Processes the "cancel" request.
-     *
-     * Allows the payment gateway to clean up any data added to the $order, set
-     * a message for the customer.
-     *
-     * @param \Drupal\commerce_order\Entity\OrderInterface $order
-     *   The order.
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   The request.
-     */
-    public function onCancel(OrderInterface $order, Request $request)
-    {
-        // TODO: Implement onCancel() method.
-    }
-
-    /**
-     * Processes the "notify" request.
-     *
-     * Note:
-     * This method can't throw exceptions on failure because some payment
-     * providers expect an error response to be returned in that case.
-     * Therefore, the method can log the error itself and then choose which
-     * response to return.
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *   The request.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response|null
-     *   The response, or NULL to return an empty HTTP 200 response.
-     */
-    public function onNotify(Request $request)
-    {
-        // TODO: Implement onNotify() method.
-    }
-
-    /**
-     * Gets the payment gateway label.
-     *
-     * The label is admin-facing and usually includes the name of the used API.
-     * For example: "Braintree (Hosted Fields)".
-     *
-     * @return mixed
-     *   The payment gateway label.
-     */
-    public function getLabel()
-    {
-        // TODO: Implement getLabel() method.
-    }
-
-    /**
-     * Gets the payment gateway display label.
-     *
-     * The display label is customer-facing and more generic.
-     * For example: "Braintree".
-     *
-     * @return string
-     *   The payment gateway display label.
-     */
-    public function getDisplayLabel()
-    {
-        // TODO: Implement getDisplayLabel() method.
-    }
-
-    /**
-     * Gets the mode in which the payment gateway is operating.
-     *
-     * @return string
-     *   The machine name of the mode.
-     */
-    public function getMode()
-    {
-        // TODO: Implement getMode() method.
+        return [
+            'commerce_payway_net_encryptionKey' => '',
+            'commerce_payway_net_billerCode' => '',
+            'commerce_payway_net_username' => '',
+            'commerce_payway_net_password' => '',
+            'commerce_payway_net_caCertsFile' => '',
+            'commerce_payway_net_merchantId' => '',
+            'commerce_payway_net_paypalEmail' => '',
+            'commerce_payway_net_payWayBaseUrl' => '',
+        ] + parent::defaultConfiguration();
     }
 
     /**
@@ -190,86 +55,10 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
      */
     public function getSupportedModes()
     {
-        // TODO: Implement getSupportedModes() method.
-    }
-
-    /**
-     * Gets the JS library ID.
-     *
-     * This is usually an external library defined in the module's
-     * libraries.yml file. Included by the PaymentInformation pane
-     * to get around core bug #1988968.
-     * Example: 'commerce_braintree/braintree'.
-     *
-     * @return string|null
-     *   The JS library ID, or NULL if not available.
-     */
-    public function getJsLibrary()
-    {
-        // TODO: Implement getJsLibrary() method.
-    }
-
-    /**
-     * Gets the payment type used by the payment gateway.
-     *
-     * @return \Drupal\commerce_payment\Plugin\Commerce\PaymentType\PaymentTypeInterface
-     *   The payment type.
-     */
-    public function getPaymentType()
-    {
-        // TODO: Implement getPaymentType() method.
-    }
-
-    /**
-     * Gets the payment method types handled by the payment gateway.
-     *
-     * @return \Drupal\commerce_payment\Plugin\Commerce\PaymentMethodType\PaymentMethodTypeInterface[]
-     *   The payment method types.
-     */
-    public function getPaymentMethodTypes()
-    {
-        // TODO: Implement getPaymentMethodTypes() method.
-    }
-
-    /**
-     * Gets the default payment method type.
-     *
-     * @return \Drupal\commerce_payment\Plugin\Commerce\PaymentMethodType\PaymentMethodTypeInterface
-     *   The default payment method type.
-     */
-    public function getDefaultPaymentMethodType()
-    {
-        // TODO: Implement getDefaultPaymentMethodType() method.
-    }
-
-    /**
-     * Gets the credit card types handled by the gateway.
-     *
-     * @return \Drupal\commerce_payment\CreditCardType[]
-     *   The credit card types.
-     */
-    public function getCreditCardTypes()
-    {
-        // TODO: Implement getCreditCardTypes() method.
-    }
-
-    /**
-     * Builds the available operations for the given payment.
-     *
-     * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
-     *   The payment.
-     *
-     * @return array
-     *   The operations.
-     *   Keyed by operation ID, each value is an array with the following keys:
-     *   - title: The operation title.
-     *   - page_title: The operation page title.
-     *   - plugin_form: The plugin form ID.
-     *   - access: Whether the operation is allowed for the given payment.
-     */
-    public function buildPaymentOperations(PaymentInterface $payment)
-    {
-        // TODO: Implement buildPaymentOperations() method.
+        return [
+            'test' => 'test',
+            'live' => 'live'
+        ];
     }
 
     /**
