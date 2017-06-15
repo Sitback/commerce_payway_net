@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
  *   },
  * )
  */
-class PayWayNetGateway implements OffsitePaymentGatewayInterface {
+class PayWayNetGateway extends OffsitePaymentGatewayBase {
 
     /**
      * Gets this plugin's configuration.
