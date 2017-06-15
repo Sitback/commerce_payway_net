@@ -1,4 +1,4 @@
-name: commerce_payway_net
+name: Commerce Payway Net
 type: module
 description: Pay by credit card via Westpac PayWay Net
 core: 8.x
