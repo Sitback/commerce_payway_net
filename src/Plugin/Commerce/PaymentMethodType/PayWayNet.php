@@ -11,8 +11,8 @@ use Drupal\commerce\BundleFieldDefinition;
  *
  * @CommercePaymentMethodType(
  *   id = "paywaynet",
- *   label = @Translation("PayWay"),
- *   create_label = @Translation("PayWay")
+ *   label = @Translation("PayWayNet"),
+ *   create_label = @Translation("PayWayNet")
  * )
  */
 class PayWayNet extends PaymentMethodTypeBase{
