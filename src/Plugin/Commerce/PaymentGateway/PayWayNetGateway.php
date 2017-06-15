@@ -67,17 +67,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
     }
 
     /**
-     * Gets the base_plugin_id of the plugin instance.
-     *
-     * @return string
-     *   The base_plugin_id of the plugin instance.
-     */
-    public function getBaseId()
-    {
-        // TODO: Implement getBaseId() method.
-    }
-
-    /**
      * Gets the derivative_id of the plugin instance.
      *
      * @return string|null
