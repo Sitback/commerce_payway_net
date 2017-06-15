@@ -1,0 +1,14 @@
+{
+  "name": "drupal/commerce_payway_net",
+  "type": "drupal-module",
+  "description": "Pay by credit card via Westpac PayWay Net",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/commerce_payway_net",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/commerce_payway_net",
+    "source": "http://cgit.drupalcode.org/commerce_payway_net"
+  },
+  "require": { }
+}
