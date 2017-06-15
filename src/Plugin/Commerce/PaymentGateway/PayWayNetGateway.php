@@ -415,7 +415,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
      */
     public function validateConfigurationForm(array &$form, FormStateInterface $form_state)
     {
-        // TODO: Implement validateConfigurationForm() method.
+        parent::validateConfigurationForm($form, $form_state);
     }
 
     /**
