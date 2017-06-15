@@ -330,7 +330,76 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
      */
     public function buildConfigurationForm(array $form, FormStateInterface $form_state)
     {
-        // TODO: Implement buildConfigurationForm() method.
+        $form = parent::buildConfigurationForm($form, $form_state);
+
+        // TODO: Delete non mandatory fields.
+        $form['commerce_payway_net_encryptionKey'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Encryption Key'),
+            '#size' => 80,
+            '#description' => t('eg. 123456789'),
+            '#default_value' => $settings['commerce_payway_net_encryptionKey'],
+            '#required' => TRUE,
+        );
+        $form['commerce_payway_net_billerCode'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Biller Code'),
+            '#size' => 80,
+            '#description' => t('eg. 123456'),
+            '#default_value' => $settings['commerce_payway_net_billerCode'],
+            '#required' => TRUE,
+        );
+        $form['commerce_payway_net_username'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Username'),
+            '#size' => 80,
+            '#description' => t('eg. K12345'),
+            '#default_value' => $settings['commerce_payway_net_username'],
+            '#required' => TRUE,
+        );
+        $form['commerce_payway_net_password'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Password'),
+            '#size' => 80,
+            '#description' => t('eg. abcdefghijk'),
+            '#default_value' => $settings['commerce_payway_net_password'],
+            '#required' => TRUE,
+        );
+        $form['commerce_payway_net_caCertsFile'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Path to cacerts.crt file'),
+            '#size' => 80,
+            '#description' => t('eg. /home/username/dev/certs/cacerts.crt'),
+            '#default_value' => $settings['commerce_payway_net_caCertsFile'],
+            '#required' => TRUE,
+        );
+        $form['commerce_payway_net_merchantId'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Merchant Id'),
+            '#size' => 80,
+            '#description' => t('eg. TEST'),
+            '#default_value' => $settings['commerce_payway_net_merchantId'],
+            '#required' => TRUE,
+        );
+        $form['commerce_payway_net_paypalEmail'] = array(
+            '#type' => 'textfield',
+            '#title' => t('PayPal email address'),
+            '#size' => 80,
+            '#description' => t('eg. test@example.com'),
+            '#default_value' => $settings['commerce_payway_net_paypalEmail'],
+            '#required' => TRUE,
+        );
+        $form['commerce_payway_net_payWayBaseUrl'] = array(
+            '#type' => 'textfield',
+            '#title' => t('PayWay Base URL'),
+            '#size' => 80,
+            '#description' => t('eg. https://www.payway.com.au/'),
+            '#default_value' => $settings['commerce_payway_net_payWayBaseUrl'],
+            '#required' => TRUE,
+        );
+
+
+        return $form;
     }
 
     /**
