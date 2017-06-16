@@ -2,15 +2,9 @@
 
 namespace Drupal\commerce_payway_net\Plugin\Commerce\PaymentGateway;
 
-use Drupal\commerce_order\Entity\OrderInterface;
-use Drupal\commerce_payment\Entity\PaymentInterface;
-use Drupal\commerce_payment\Entity\PaymentMethodInterface;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayBase;
-use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayInterface;
-use Drupal\commerce_payway_frame\Plugin\Commerce\PaymentGateway\PayWayFrameInterface;
-use Drupal\commerce_price\Price;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Drupal\commerce_payment_example\PluginForm\OffsiteRedirect;
 
 /**
  * Provides the PayWay Frame payment gateway.
