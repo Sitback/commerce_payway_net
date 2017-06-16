@@ -187,57 +187,22 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
      */
     public function submitConfigurationForm(array &$form, FormStateInterface $form_state)
     {
-        // TODO: Implement submitConfigurationForm() method.
+        parent::submitConfigurationForm($form, $form_state);
+
+        if (!$form_state->getErrors()) {
+            $values = $form_state->getValue($form['#parents']);
+
+            $this->configuration['commerce_payway_net_encryptionKey'] = $values['commerce_payway_net_encryptionKey'];
+            $this->configuration['commerce_payway_net_billerCode'] = $values['commerce_payway_net_billerCode'];
+            $this->configuration['commerce_payway_net_username'] = $values['commerce_payway_net_username'];
+            $this->configuration['commerce_payway_net_password'] = $values['commerce_payway_net_password'];
+            $this->configuration['commerce_payway_net_caCertsFile'] = $values['commerce_payway_net_caCertsFile'];
+            $this->configuration['commerce_payway_net_merchantId'] = $values['commerce_payway_net_merchantId'];
+            $this->configuration['commerce_payway_net_paypalEmail'] = $values['commerce_payway_net_paypalEmail'];
+            $this->configuration['commerce_payway_net_payWayBaseUrl'] = $values['commerce_payway_net_payWayBaseUrl'];
+            $this->configuration['display_label'] = $values['display_label'];
+            $this->configuration['mode'] = $values['mode'];
+        }
     }
 
-    /**
-     * Gets the plugin_id of the plugin instance.
-     *
-     * @return string
-     *   The plugin_id of the plugin instance.
-     */
-    public function getPluginId()
-    {
-        // TODO: Implement getPluginId() method.
-    }
-
-    /**
-     * Gets the definition of the plugin implementation.
-     *
-     * @return array
-     *   The plugin definition, as returned by the discovery object used by the
-     *   plugin manager.
-     */
-    public function getPluginDefinition()
-    {
-        // TODO: Implement getPluginDefinition() method.
-    }
-
-    /**
-     * Gets the form class for the given operation.
-     *
-     * @param string $operation
-     *   The name of the operation.
-     *
-     * @return string|null
-     *   The form class if defined, NULL otherwise.
-     */
-    public function getFormClass($operation)
-    {
-        // TODO: Implement getFormClass() method.
-    }
-
-    /**
-     * Gets whether the plugin has a form class for the given operation.
-     *
-     * @param string $operation
-     *   The name of the operation.
-     *
-     * @return bool
-     *   TRUE if the plugin has a form class for the given operation.
-     */
-    public function hasFormClass($operation)
-    {
-        // TODO: Implement hasFormClass() method.
-    }
 }
