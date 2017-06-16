@@ -2,9 +2,12 @@
 
 namespace Drupal\commerce_payway_net\Plugin\Commerce\PaymentGateway;
 
+use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayBase;
+use Drupal\commerce_price\Price;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\commerce_payment_example\PluginForm\OffsiteRedirect;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Provides the PayWay Frame payment gateway.
@@ -202,6 +205,89 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
             $this->configuration['display_label'] = $values['display_label'];
             $this->configuration['mode'] = $values['mode'];
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function onReturn(OrderInterface $order, Request $request) {
+
+        $configuration = $this->configuration;
+        $payment_storage = $this->entityTypeManager->getStorage('commerce_payment');
+
+        // Process params returned by the bank.
+        if(isset($_REQUEST['EncryptedParameters'])) {
+
+            $key = $configuration['commerce_payway_net_encryptionKey'];
+            $encryptedParameters = $_REQUEST['EncryptedParameters'];
+            $signature = $_REQUEST['Signature'];
+
+            $result = $this->_uc_payway_net_decrypt_parameters($key, $encryptedParameters, $signature);
+
+            switch($result['payment_status']) {
+                case 'approved':
+                    // Create payment.
+                    $amountPaid = new Price($result['payment_amount'], 'AUD');
+
+                    $payment = $payment_storage->create([
+                        'state' => 'capture_completed',
+                        'amount' => $amountPaid,
+                        'payment_gateway' => $this->entityId,
+                        'order_id' => $order->id(),
+                        //'test' => $this->getMode() === 'test',
+                        'remote_id' => $request->query->get($result['payment_number']),
+                        'remote_state' => $request->query->get($result['payment_status']),
+                        'authorized' => \Drupal::time()->getRequestTime(),
+                    ]);
+                    $payment->save();
+                    drupal_set_message('Payment was processed');
+
+                    break;
+                case 'declined ?':
+                    break;
+                default:
+                    break;
+            }
+
+            $a = 1;
+
+        }
+    }
+    public function _uc_payway_net_pkcs5_unpad($text) {
+        $pad = ord($text{strlen($text)-1});
+        if ($pad > strlen($text)) return false;
+        if (strspn($text, chr($pad), strlen($text) - $pad) != $pad) return false;
+        return substr($text, 0, -1 * $pad);
+    }
+
+    public function _uc_payway_net_decrypt_parameters($encrytion_key, $encrypted_text, $signature) {
+        $key = base64_decode($encrytion_key);
+        $iv = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+        $td = mcrypt_module_open('rijndael-128', '', 'cbc', '');
+        // Decrypt the parameter text
+        mcrypt_generic_init($td, $key, $iv);
+        $text = mdecrypt_generic($td, base64_decode($encrypted_text));
+        $text = $this->_uc_payway_net_pkcs5_unpad($text);
+        mcrypt_generic_deinit($td);
+        // Decrypt the signature value
+        mcrypt_generic_init($td, $key, $iv);
+        $hash = mdecrypt_generic($td, base64_decode($signature));
+        $hash = bin2hex($this->_uc_payway_net_pkcs5_unpad($hash));
+        mcrypt_generic_deinit($td);
+        mcrypt_module_close($td);
+        // Compute the MD5 hash of the parameters
+        $text_hash = md5($text);
+        // Check the provided MD5 hash against the computed one
+        if ($text_hash != $hash) {
+            trigger_error("Invalid parameters signature");
+        }
+        $params = array();
+        // Loop through each parameter provided
+        foreach (explode( "&", $text ) as $parameter) {
+            list($name, $value) = explode("=", $parameter);
+            $params[urldecode($name)] = urldecode($value);
+        }
+        return $params;
     }
 
 }
