@@ -85,6 +85,8 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
     {
         $form = parent::buildConfigurationForm($form, $form_state);
 
+        $settings = $this->configuration;
+
         // TODO: Delete non mandatory fields.
         $form['commerce_payway_net_encryptionKey'] = array(
             '#type' => 'textfield',
@@ -124,7 +126,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
             '#size' => 80,
             '#description' => t('eg. /home/username/dev/certs/cacerts.crt'),
             '#default_value' => $settings['commerce_payway_net_caCertsFile'],
-            '#required' => TRUE,
+            //'#required' => TRUE,
         );
         $form['commerce_payway_net_merchantId'] = array(
             '#type' => 'textfield',
