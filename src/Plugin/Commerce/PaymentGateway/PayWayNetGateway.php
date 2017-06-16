@@ -18,8 +18,11 @@ use Symfony\Component\HttpFoundation\Request;
  * @CommercePaymentGateway(
  *   id = "paywaynet_gateway",
  *   label = "PayWayNet Gateway",
- *   display_label = "PayWayNet Gateway",
+ *   display_label = "PayWayNet",
  *   payment_method_types = {"paywaynet"},
+ *   forms = {
+ *     "offsite-payment" = "Drupal\commerce_payway_net\PluginForm\PayWayNetForm",
+ *   },
  *   credit_card_types = {
  *     "amex", "dinersclub", "discover", "jcb", "maestro", "mastercard", "visa",
  *   },
