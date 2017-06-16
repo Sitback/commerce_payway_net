@@ -3,7 +3,10 @@
 namespace Drupal\commerce_payway_net\PluginForm ;
 
 
+use Drupal\commerce_order\Entity\Order;
+use Drupal\commerce_payment\Entity\Payment;
 use Drupal\commerce_payment\PluginForm\PaymentGatewayFormBase;
+use Drupal\commerce_price\Price;
 use Drupal\Core\Form\FormStateInterface;
 
 class PayWayNetForm extends PaymentGatewayFormBase {
@@ -33,23 +36,39 @@ class PayWayNetForm extends PaymentGatewayFormBase {
      */
     public function buildConfigurationForm(array $form, FormStateInterface $form_state)
     {
-        // TODO: Implement buildConfigurationForm() method.
+        global $base_url;
 
         /** @var \Drupal\commerce_payment\Entity\PaymentInterface $payment */
         $payment = $this->entity;
+        /** @var Order $order */
+        $order = $payment->get('order_id')->first()->get('entity')->getValue();
+
+        $orderId = $order->id();
+        $amount = $order->getTotalPrice()->getNumber();
+
         /** @var \Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayInterface $payment_gateway_plugin */
         $payment_gateway_plugin = $payment->getPaymentGateway()->getPlugin();
         $configuration = $payment_gateway_plugin->getConfiguration();
-        $baseUrl = $configuration['commerce_payway_net_payWayBaseUrl'];
+        
+
+        $pwNetBaseUrl = $configuration['commerce_payway_net_payWayBaseUrl'];
 
         // 1. Generate token.
         // www.payway.com.au/RequestToken
-        $param1 = "biller_code=" . $configuration['commerce_payway_net_billerCode'];
-        $param2 = "&username=" . $configuration['commerce_payway_net_username'];
-        $param3 = "&password=" . $configuration['commerce_payway_net_password'];
-        $params = $param1 . $param2 . $param3;
+        $param1 = 'biller_code=' . $configuration['commerce_payway_net_billerCode'];
+        $param2 = '&username=' . $configuration['commerce_payway_net_username'];
+        $param3 = '&password=' . $configuration['commerce_payway_net_password'];
 
-        $ch = curl_init($baseUrl . "RequestToken");
+        $param4 = '&payment_reference=' .$orderId ;
+        $param5 = '&payment_amount=' . $amount  ;
+        $param6 = '&return_link_url=' . $base_url. '/checkout/' . $orderId . '/payment/return';
+        $param8 = '&merchant_id=' . $configuration['commerce_payway_net_merchandId'];
+        $param9 = '&paypal_email=' . 'test@example.com' ;
+
+
+        $params = $param1 . $param2 . $param3 .$param4 .$param5 .$param6 .$param8 .$param9;
+
+        $ch = curl_init($pwNetBaseUrl . 'RequestToken');
         curl_setopt_array($ch, array(
             CURLOPT_POST => TRUE,
             CURLOPT_RETURNTRANSFER => TRUE,
@@ -71,8 +90,22 @@ class PayWayNetForm extends PaymentGatewayFormBase {
         }
         curl_close($ch);
 
+        // 2. Generate the link/post to get the user to the PayWay page.
+        // https://www.payway.com.au/MakePayment?BillerCode=XXXXXX&token=TTTTT
+        $form['payway_net'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Token'),
+            '#default_value' => $token,
+            '#size' => 60,
+            '#maxlength' => 128,
+        );
 
-        $a = 1;
+        $link = $pwNetBaseUrl . 'MakePayment?' . $param1 . '&' . $token;
+        $form['payway_net_link'] = array(
+            '#markup' => '<a href="' . $link . '">MakePayement</a>',
+        );
+
+        return $form;
     }
 
     /**
