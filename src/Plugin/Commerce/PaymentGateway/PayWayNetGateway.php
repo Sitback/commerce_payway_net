@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
  *   id = "paywaynet_gateway",
  *   label = "PayWayNet Gateway",
  *   display_label = "PayWayNet",
- *   payment_method_types = {"paywaynet"},
  *   forms = {
  *     "offsite-payment" = "Drupal\commerce_payway_net\PluginForm\PayWayNetForm",
  *   },
