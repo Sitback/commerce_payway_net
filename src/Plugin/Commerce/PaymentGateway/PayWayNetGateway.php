@@ -339,15 +339,12 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
      * @return array $params.
      */
     private function payWayDecryptParameters($encryption_key, $encrypted_text, $signature) {
-        $encryption_key = $encryption_key;
-        $encrypted_text = $encrypted_text;
-        $signature = $signature;
         $iv = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
-        $text = mcrypt_decrypt('rijndael-128', base64_decode($encryption_key), base64_decode($encrypted_text), MCRYPT_MODE_CBC, $iv);
+        $text = openssl_decrypt(base64_decode($encrypted_text), 'AES-128-CBC', base64_decode($encryption_key), OPENSSL_NO_PADDING, $iv);
         $text = $this->_uc_payway_net_pkcs5_unpad($text);
 
-        $hash = mcrypt_decrypt('rijndael-128', base64_decode($encryption_key), base64_decode($signature), MCRYPT_MODE_CBC, $iv);
+        $hash = openssl_decrypt(base64_decode($signature), 'AES-128-CBC', base64_decode($encryption_key), OPENSSL_NO_PADDING, $iv );
         $hash = bin2hex($this->_uc_payway_net_pkcs5_unpad($hash));
 
         if($hash !== md5($text)) {
