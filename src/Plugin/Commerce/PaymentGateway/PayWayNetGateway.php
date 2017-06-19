@@ -228,7 +228,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
             $encryptedParameters = $_REQUEST['EncryptedParameters'];
             $signature = $_REQUEST['Signature'];
 
-            $result = $this->_uc_payway_net_decrypt_parameters($key, $encryptedParameters, $signature);
+            $result = $this->payWayDecryptParameters($key, $encryptedParameters, $signature);
 
             $order = Order::load($result['payment_reference']);
 
@@ -330,34 +330,34 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
         return substr($text, 0, -1 * $pad);
     }
 
-    private function _uc_payway_net_decrypt_parameters($encrytion_key, $encrypted_text, $signature) {
-        $key = base64_decode($encrytion_key);
+    /**
+     * Decrypt the query string returned by the bank.
+     *
+     * @param String $encryption_key
+     * @param String $encrypted_text
+     * @param String $signature
+     * @return array $params.
+     */
+    private function payWayDecryptParameters($encryption_key, $encrypted_text, $signature) {
+        $encryption_key = $encryption_key;
+        $encrypted_text = $encrypted_text;
+        $signature = $signature;
         $iv = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
-        $td = mcrypt_module_open('rijndael-128', '', 'cbc', '');
-        // Decrypt the parameter text
-        mcrypt_generic_init($td, $key, $iv);
-        $text = mdecrypt_generic($td, base64_decode($encrypted_text));
+
+        $text = mcrypt_decrypt('rijndael-128', base64_decode($encryption_key), base64_decode($encrypted_text), MCRYPT_MODE_CBC, $iv);
         $text = $this->_uc_payway_net_pkcs5_unpad($text);
-        mcrypt_generic_deinit($td);
-        // Decrypt the signature value
-        mcrypt_generic_init($td, $key, $iv);
-        $hash = mdecrypt_generic($td, base64_decode($signature));
+
+        $hash = mcrypt_decrypt('rijndael-128', base64_decode($encryption_key), base64_decode($signature), MCRYPT_MODE_CBC, $iv);
         $hash = bin2hex($this->_uc_payway_net_pkcs5_unpad($hash));
-        mcrypt_generic_deinit($td);
-        mcrypt_module_close($td);
-        // Compute the MD5 hash of the parameters
-        $text_hash = md5($text);
-        // Check the provided MD5 hash against the computed one
-        if ($text_hash != $hash) {
+
+        if($hash !== md5($text)) {
             trigger_error("Invalid parameters signature");
         }
-        $params = array();
-        // Loop through each parameter provided
-        foreach (explode( "&", $text ) as $parameter) {
-            list($name, $value) = explode("=", $parameter);
-            $params[urldecode($name)] = urldecode($value);
-        }
+
+        $params = [];
+        parse_str($text, $params);
         return $params;
+
     }
 
 }
