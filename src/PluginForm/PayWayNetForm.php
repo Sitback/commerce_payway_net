@@ -4,11 +4,10 @@ namespace Drupal\commerce_payway_net\PluginForm ;
 
 
 use Drupal\commerce_order\Entity\Order;
-use Drupal\commerce_payment\Entity\Payment;
-use Drupal\commerce_payment\PluginForm\PaymentGatewayFormBase;
 use Drupal\commerce_payment\PluginForm\PaymentOffsiteForm;
-use Drupal\commerce_price\Price;
 use Drupal\Core\Form\FormStateInterface;
+use GuzzleHttp\Exception\RequestException;
+
 
 class PayWayNetForm extends PaymentOffsiteForm {
 
@@ -79,10 +78,9 @@ class PayWayNetForm extends PaymentOffsiteForm {
             'token' => $token[1],
         ];
         $redirectUrl = $configuration['commerce_payway_net_payWayBaseUrl'] . 'MakePayment';
-        $redirectMethod = 'POST';
 
         // Redirect the user.
-        $this->buildRedirectForm($form, $form_state, $redirectUrl, $data, $redirectMethod);
+        $this->buildRedirectForm($form, $form_state, $redirectUrl, $data, 'POST');
     }
 
     /**
@@ -107,37 +105,34 @@ class PayWayNetForm extends PaymentOffsiteForm {
 
         // 1. Generate token.
         // www.payway.com.au/RequestToken
-        $params = [
-            'biller_code' => $configuration['commerce_payway_net_billerCode'],
-            'username' => $configuration['commerce_payway_net_username'],
-            'password' => $configuration['commerce_payway_net_password'],
-            'payment_reference' => $order->id(),
-            'payment_amount' => $order->getTotalPrice()->getNumber(),
-            'return_link_url' => $base_url. '/checkout/' . $orderId . '/payment/return',
-            'merchant_id' => $configuration['commerce_payway_net_merchandId'],
-            'paypal_email' => $configuration['commerce_payway_net_paypalEmail'],
-        ] ;
-
-        $ch = curl_init($pwNetBaseUrl . 'RequestToken');
-        curl_setopt_array($ch, array(
-            CURLOPT_POST => TRUE,
-            CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded'),
-            CURLOPT_POSTFIELDS => http_build_query($params),
-        ));
-
-        // Make the request.
-        // $this->token = token=xxxxxx.
-        $this->token = curl_exec($ch);
-
-        // Check the response for errors.
-        $errorNumber = curl_errno($ch);
-        if ($errorNumber !== 0) {
-            $errorMessage = curl_error($ch);
+        try {
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', $pwNetBaseUrl . 'RequestToken', [
+                'form_params' => [
+                    'biller_code' => $configuration['commerce_payway_net_billerCode'],
+                    'username' => $configuration['commerce_payway_net_username'],
+                    'password' => $configuration['commerce_payway_net_password'],
+                    'payment_reference' => $order->id(),
+                    'payment_amount' => $order->getTotalPrice()->getNumber(),
+                    'return_link_url' => $base_url. '/checkout/' . $orderId . '/payment/return',
+                    'merchant_id' => $configuration['commerce_payway_net_merchandId'],
+                    'paypal_email' => $configuration['commerce_payway_net_paypalEmail'],
+                ],
+            ]);
+        } catch (RequestException $e) {
+            $errorMessage =  $e->getMessage();
             \Drupal::logger('commerce_payway_net')->error($errorMessage);
             header("HTTP/1.1 403 " . $errorMessage);
-            exit;
         }
-        curl_close($ch);
+
+        if ($response->getStatusCode() !== 200) {
+            $errorMessage =  $response->getReasonPhrase();
+            \Drupal::logger('commerce_payway_net')->error($errorMessage);
+            header("HTTP/1.1 403 " . $errorMessage);
+        } else {
+            $length = $response->getBody()->getSize();
+            $this->token = $response->getBody()->read($length);
+        }
+
     }
 }
