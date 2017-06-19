@@ -94,9 +94,6 @@ class PayWayNetForm extends PaymentOffsiteForm {
         /** @var Order $order */
         $order = $payment->get('order_id')->first()->get('entity')->getValue();
 
-        $orderId = $order->id();
-        $amount = $order->getTotalPrice()->getNumber();
-
         /** @var \Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayInterface $payment_gateway_plugin */
         $payment_gateway_plugin = $payment->getPaymentGateway()->getPlugin();
         $configuration = $payment_gateway_plugin->getConfiguration();
