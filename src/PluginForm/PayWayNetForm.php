@@ -63,9 +63,6 @@ class PayWayNetForm extends PaymentOffsiteForm {
      */
     public function submitConfigurationForm(array &$form, FormStateInterface $form_state)
     {
-        // TODO: Implement submitConfigurationForm() method.
-        $a=1;
-
         /** @var \Drupal\commerce_payment\Entity\PaymentInterface $payment */
         $payment = $this->entity;
 
