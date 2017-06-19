@@ -102,31 +102,28 @@ class PayWayNetForm extends PaymentOffsiteForm {
         /** @var \Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayInterface $payment_gateway_plugin */
         $payment_gateway_plugin = $payment->getPaymentGateway()->getPlugin();
         $configuration = $payment_gateway_plugin->getConfiguration();
-        
 
         $pwNetBaseUrl = $configuration['commerce_payway_net_payWayBaseUrl'];
 
         // 1. Generate token.
         // www.payway.com.au/RequestToken
-        $param1 = 'biller_code=' . $configuration['commerce_payway_net_billerCode'];
-        $param2 = '&username=' . $configuration['commerce_payway_net_username'];
-        $param3 = '&password=' . $configuration['commerce_payway_net_password'];
-
-        $param4 = '&payment_reference=' .$orderId ;
-        $param5 = '&payment_amount=' . $amount  ;
-        $param6 = '&return_link_url=' . $base_url. '/checkout/' . $orderId . '/payment/return';
-        $param8 = '&merchant_id=' . $configuration['commerce_payway_net_merchandId'];
-        $param9 = '&paypal_email=' . 'test@example.com' ;
-
-
-        $params = $param1 . $param2 . $param3 .$param4 .$param5 .$param6 .$param8 .$param9;
+        $params = [
+            'biller_code' => $configuration['commerce_payway_net_billerCode'],
+            'username' => $configuration['commerce_payway_net_username'],
+            'password' => $configuration['commerce_payway_net_password'],
+            'payment_reference' => $order->id(),
+            'payment_amount' => $order->getTotalPrice()->getNumber(),
+            'return_link_url' => $base_url. '/checkout/' . $orderId . '/payment/return',
+            'merchant_id' => $configuration['commerce_payway_net_merchandId'],
+            'paypal_email' => $configuration['commerce_payway_net_paypalEmail'],
+        ] ;
 
         $ch = curl_init($pwNetBaseUrl . 'RequestToken');
         curl_setopt_array($ch, array(
             CURLOPT_POST => TRUE,
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded'),
-            CURLOPT_POSTFIELDS => $params,
+            CURLOPT_POSTFIELDS => http_build_query($params),
         ));
 
         // Make the request.
