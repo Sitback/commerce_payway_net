@@ -323,10 +323,16 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
         $payment->save();
     }
 
-    private function _uc_payway_net_pkcs5_unpad($text) {
+
+    private function payWayPkcs5Unpad($text) {
         $pad = ord($text{strlen($text)-1});
-        if ($pad > strlen($text)) return false;
-        if (strspn($text, chr($pad), strlen($text) - $pad) != $pad) return false;
+        if ($pad > strlen($text)) {
+            return false;
+        }
+        if (strspn($text, chr($pad), strlen($text) - $pad) != $pad)  {
+            return false;
+        }
+
         return substr($text, 0, -1 * $pad);
     }
 
@@ -342,10 +348,10 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
         $iv = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
         $text = openssl_decrypt(base64_decode($encrypted_text), 'AES-128-CBC', base64_decode($encryption_key), OPENSSL_NO_PADDING, $iv);
-        $text = $this->_uc_payway_net_pkcs5_unpad($text);
+        $text = $this->payWayPkcs5Unpad($text);
 
         $hash = openssl_decrypt(base64_decode($signature), 'AES-128-CBC', base64_decode($encryption_key), OPENSSL_NO_PADDING, $iv );
-        $hash = bin2hex($this->_uc_payway_net_pkcs5_unpad($hash));
+        $hash = bin2hex($this->payWayPkcs5Unpad($hash));
 
         if($hash !== md5($text)) {
             trigger_error("Invalid parameters signature");
