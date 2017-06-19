@@ -73,20 +73,16 @@ class PayWayNetForm extends PaymentOffsiteForm {
         $payment_gateway_plugin = $payment->getPaymentGateway()->getPlugin();
         $configuration = $payment_gateway_plugin->getConfiguration();
 
-        $pwNetBaseUrl = $configuration['commerce_payway_net_payWayBaseUrl'];
-        $param1 = 'biller_code=' . $configuration['commerce_payway_net_billerCode'];
-
         $this->generatePayWayNetToken();
 
         // 2. Generate the link/post to get the user to the PayWay page.
         // https://www.payway.com.au/MakePayment?BillerCode=XXXXXX&token=TTTTT
-        $t = explode('=',$this->token);
-        $p1 = explode('=', $param1);
+        $token = explode('=',$this->token);
         $data = [
-            'BillerCode' => $p1[1],
-            'token' => $t[1],
+            'BillerCode' => $configuration['commerce_payway_net_billerCode'],
+            'token' => $token[1],
         ];
-        $redirectUrl = $pwNetBaseUrl . 'MakePayment';
+        $redirectUrl = $configuration['commerce_payway_net_payWayBaseUrl'] . 'MakePayment';
         $redirectMethod = 'POST';
 
         // Redirect the user.
