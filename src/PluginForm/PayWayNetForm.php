@@ -39,8 +39,6 @@ class PayWayNetForm extends PaymentOffsiteForm {
      */
     public function buildConfigurationForm(array $form, FormStateInterface $form_state)
     {
-        // 2. Generate the link/post to get the user to the PayWay page.
-        // https://www.payway.com.au/MakePayment?BillerCode=XXXXXX&token=TTTTT
         $form['commerce_message'] = [
             '#markup' => '<div class="checkout-help">' . t('Please wait while you are redirected to the payment server. If nothing happens within 10 seconds, please click on the button below.') . '</div>',
             '#weight' => -10,
@@ -70,9 +68,10 @@ class PayWayNetForm extends PaymentOffsiteForm {
         $payment_gateway_plugin = $payment->getPaymentGateway()->getPlugin();
         $configuration = $payment_gateway_plugin->getConfiguration();
 
+        // 1. Generate PayWay Token.
         $this->generatePayWayNetToken();
 
-        // 2. Generate the link/post to get the user to the PayWay page.
+        // 2. Generate the link to post the user to PayWayNet.
         // https://www.payway.com.au/MakePayment?BillerCode=XXXXXX&token=TTTTT
         $token = explode('=',$this->token);
         $data = [
@@ -131,7 +130,7 @@ class PayWayNetForm extends PaymentOffsiteForm {
         ));
 
         // Make the request.
-        // token=xxxxxx.
+        // $this->token = token=xxxxxx.
         $this->token = curl_exec($ch);
 
         // Check the response for errors.
