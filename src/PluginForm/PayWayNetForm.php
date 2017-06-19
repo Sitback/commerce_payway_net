@@ -106,6 +106,7 @@ class PayWayNetForm extends PaymentOffsiteForm {
     // 1. Generate token.
     // www.payway.com.au/RequestToken.
     try {
+      //TODO: inject this from the constructor.
       $client = new Client();
       $response = $client->request('POST', $pwNetBaseUrl . 'RequestToken', [
         'form_params' => [

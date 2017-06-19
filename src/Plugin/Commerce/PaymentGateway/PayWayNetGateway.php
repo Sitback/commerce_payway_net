@@ -283,6 +283,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
    *   The order which needs to be modified.
    */
   private function updateOrderToComplete(Order $order) {
+    //TODO: inject Drupal::time() from the constructor.
     $order->set('state', 'completed');
     $order->set('placed', \Drupal::time()->getRequestTime());
     $order->set('completed', \Drupal::time()->getRequestTime());
@@ -303,12 +304,12 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
     $payment_storage = $this->entityTypeManager->getStorage('commerce_payment');
     $amountPaid = new Price($result['payment_amount'], 'AUD');
 
+    //TODO: inject Drupal::time() from the constructor.
     $payment = $payment_storage->create([
       'state' => $status,
       'amount' => $amountPaid,
       'payment_gateway' => $this->entityId,
       'order_id' => $order->id(),
-        // 'test' => $this->getMode() === 'test',.
       'remote_id' => $result['payment_number'],
       'remote_state' => $result['payment_status'],
       'authorized' => \Drupal::time()->getRequestTime(),
