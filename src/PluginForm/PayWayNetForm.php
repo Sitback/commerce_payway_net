@@ -114,7 +114,7 @@ class PayWayNetForm extends PaymentOffsiteForm {
                     'password' => $configuration['commerce_payway_net_password'],
                     'payment_reference' => $order->id(),
                     'payment_amount' => $order->getTotalPrice()->getNumber(),
-                    'return_link_url' => $base_url. '/checkout/' . $orderId . '/payment/return',
+                    'return_link_url' => $base_url. '/payment/notify/payway_net',
                     'merchant_id' => $configuration['commerce_payway_net_merchandId'],
                     'paypal_email' => $configuration['commerce_payway_net_paypalEmail'],
                 ],
