@@ -87,10 +87,6 @@ class PayWayNetForm extends PaymentOffsiteForm {
             'token' => $t[1],
         ];
         $redirectUrl = $pwNetBaseUrl . 'MakePayment';
-        //$redirectUrl = $pwNetBaseUrl . 'MakePayment?' . $param1 . '&' . $this->token;
-        //$form['#action'] = $redirectUrl;
-
-
         $redirectMethod = 'POST';
 
         // Redirect the user.
