@@ -6,10 +6,13 @@ namespace Drupal\commerce_payway_net\PluginForm ;
 use Drupal\commerce_order\Entity\Order;
 use Drupal\commerce_payment\Entity\Payment;
 use Drupal\commerce_payment\PluginForm\PaymentGatewayFormBase;
+use Drupal\commerce_payment\PluginForm\PaymentOffsiteForm;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Form\FormStateInterface;
 
-class PayWayNetForm extends PaymentGatewayFormBase {
+class PayWayNetForm extends PaymentOffsiteForm {
+
+    private $token;
 
     /**
      * Form constructor.
@@ -36,6 +39,68 @@ class PayWayNetForm extends PaymentGatewayFormBase {
      */
     public function buildConfigurationForm(array $form, FormStateInterface $form_state)
     {
+        // 2. Generate the link/post to get the user to the PayWay page.
+        // https://www.payway.com.au/MakePayment?BillerCode=XXXXXX&token=TTTTT
+        $form['commerce_message'] = [
+            '#markup' => '<div class="checkout-help">' . t('Please wait while you are redirected to the payment server. If nothing happens within 10 seconds, please click on the button below.') . '</div>',
+            '#weight' => -10,
+        ];
+
+        return $form;
+
+    }
+
+    /**
+     * Form submission handler.
+     *
+     * @param array $form
+     *   An associative array containing the structure of the plugin form as built
+     *   by static::buildConfigurationForm().
+     * @param \Drupal\Core\Form\FormStateInterface $form_state
+     *   The current state of the form. Calling code should pass on a subform
+     *   state created through
+     *   \Drupal\Core\Form\SubformState::createForSubform().
+     */
+    public function submitConfigurationForm(array &$form, FormStateInterface $form_state)
+    {
+        // TODO: Implement submitConfigurationForm() method.
+        $a=1;
+
+        /** @var \Drupal\commerce_payment\Entity\PaymentInterface $payment */
+        $payment = $this->entity;
+
+        /** @var \Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayInterface $payment_gateway_plugin */
+        $payment_gateway_plugin = $payment->getPaymentGateway()->getPlugin();
+        $configuration = $payment_gateway_plugin->getConfiguration();
+
+        $pwNetBaseUrl = $configuration['commerce_payway_net_payWayBaseUrl'];
+        $param1 = 'biller_code=' . $configuration['commerce_payway_net_billerCode'];
+
+        $this->generatePayWayNetToken();
+
+        // 2. Generate the link/post to get the user to the PayWay page.
+        // https://www.payway.com.au/MakePayment?BillerCode=XXXXXX&token=TTTTT
+        $t = explode('=',$this->token);
+        $p1 = explode('=', $param1);
+        $data = [
+            'BillerCode' => $p1[1],
+            'token' => $t[1],
+        ];
+        $redirectUrl = $pwNetBaseUrl . 'MakePayment';
+        //$redirectUrl = $pwNetBaseUrl . 'MakePayment?' . $param1 . '&' . $this->token;
+        //$form['#action'] = $redirectUrl;
+
+
+        $redirectMethod = 'POST';
+
+        // Redirect the user.
+        $this->buildRedirectForm($form, $form_state, $redirectUrl, $data, $redirectMethod);
+    }
+
+    /**
+     * Generate PayWayNet Token.
+     */
+    protected function generatePayWayNetToken() {
         global $base_url;
 
         /** @var \Drupal\commerce_payment\Entity\PaymentInterface $payment */
@@ -78,7 +143,7 @@ class PayWayNetForm extends PaymentGatewayFormBase {
 
         // Make the request.
         // token=xxxxxx.
-        $token = curl_exec($ch);
+        $this->token = curl_exec($ch);
 
         // Check the response for errors.
         $errorNumber = curl_errno($ch);
@@ -89,39 +154,5 @@ class PayWayNetForm extends PaymentGatewayFormBase {
             exit;
         }
         curl_close($ch);
-
-        // 2. Generate the link/post to get the user to the PayWay page.
-        // https://www.payway.com.au/MakePayment?BillerCode=XXXXXX&token=TTTTT
-        $form['payway_net'] = array(
-            '#type' => 'textfield',
-            '#title' => t('Token'),
-            '#default_value' => $token,
-            '#size' => 60,
-            '#maxlength' => 128,
-        );
-
-        $link = $pwNetBaseUrl . 'MakePayment?' . $param1 . '&' . $token;
-        $form['payway_net_link'] = array(
-            '#markup' => '<a href="' . $link . '">MakePayement</a>',
-        );
-
-        return $form;
-    }
-
-    /**
-     * Form submission handler.
-     *
-     * @param array $form
-     *   An associative array containing the structure of the plugin form as built
-     *   by static::buildConfigurationForm().
-     * @param \Drupal\Core\Form\FormStateInterface $form_state
-     *   The current state of the form. Calling code should pass on a subform
-     *   state created through
-     *   \Drupal\Core\Form\SubformState::createForSubform().
-     */
-    public function submitConfigurationForm(array &$form, FormStateInterface $form_state)
-    {
-        // TODO: Implement submitConfigurationForm() method.
-        $a=1;
     }
 }
