@@ -4,7 +4,6 @@ namespace Drupal\commerce_payway_net\PluginForm;
 
 use Drupal\commerce_payment\PluginForm\PaymentOffsiteForm;
 use Drupal\Core\Form\FormStateInterface;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
 /**
@@ -97,7 +96,7 @@ class PayWayNetForm extends PaymentOffsiteForm {
     /** @var \Drupal\commerce_order\Entity\Order $order */
     $order = $payment->get('order_id')->first()->get('entity')->getValue();
 
-    /** @var \Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayInterface $payment_gateway_plugin */
+    /** @var \Drupal\commerce_payway_net\Plugin\Commerce\PaymentGateway\PayWayNetGateway $payment_gateway_plugin */
     $payment_gateway_plugin = $payment->getPaymentGateway()->getPlugin();
     $configuration = $payment_gateway_plugin->getConfiguration();
 
@@ -106,8 +105,7 @@ class PayWayNetForm extends PaymentOffsiteForm {
     // 1. Generate token.
     // www.payway.com.au/RequestToken.
     try {
-      //TODO: inject this from the constructor.
-      $client = new Client();
+      $client = $payment_gateway_plugin->getClient();
       $response = $client->request('POST', $pwNetBaseUrl . 'RequestToken', [
         'form_params' => [
           'biller_code' => $configuration['commerce_payway_net_billerCode'],

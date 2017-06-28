@@ -3,12 +3,20 @@
 namespace Drupal\commerce_payway_net\Plugin\Commerce\PaymentGateway;
 
 use Drupal\commerce_order\Entity\Order;
+use Drupal\commerce_payment\Annotation\CommercePaymentGateway;
+use Drupal\commerce_payment\PaymentMethodTypeManager;
+use Drupal\commerce_payment\PaymentTypeManager;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use GuzzleHttp\Client;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+
 
 /**
  * Provides the PayWay Frame payment gateway.
@@ -25,7 +33,33 @@ use Symfony\Component\HttpFoundation\Request;
  *   },
  * )
  */
-class PayWayNetGateway extends OffsitePaymentGatewayBase {
+class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFactoryPluginInterface {
+
+  private $client;
+
+  /**
+   * @inheritdoc.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, PaymentTypeManager $payment_type_manager, PaymentMethodTypeManager $payment_method_type_manager, Client $client) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $payment_type_manager, $payment_method_type_manager);
+
+    $this->client = $client;
+  }
+
+  /**
+   * @inheritdoc.
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity_type.manager'),
+      $container->get('plugin.manager.commerce_payment_type'),
+      $container->get('plugin.manager.commerce_payment_method_type'),
+      $container->get('http_client')
+    );
+  }
 
   /**
    * Gets default configuration for this plugin.
@@ -378,6 +412,13 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase {
     parse_str($text, $params);
     return $params;
 
+  }
+
+  /**
+   * @return \GuzzleHttp\Client
+   */
+  public function getClient() {
+    return $this->client;
   }
 
 }
