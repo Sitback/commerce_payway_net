@@ -76,10 +76,10 @@ class PayWayNetForm extends PaymentOffsiteForm {
     // https://www.payway.com.au/MakePayment?BillerCode=XXXXXX&token=TTTTT
     $token = explode('=', $this->token);
     $data = [
-      'BillerCode' => $configuration['commerce_payway_net_billerCode'],
+      'BillerCode' => $configuration['commerce_payway_net_biller_code'],
       'token' => $token[1],
     ];
-    $redirectUrl = $configuration['commerce_payway_net_payWayBaseUrl'] . 'MakePayment';
+    $redirectUrl = $configuration['commerce_payway_net_payway_baseUrl'] . 'MakePayment';
 
     // Redirect the user.
     $this->buildRedirectForm($form, $form_state, $redirectUrl, $data, 'POST');
@@ -100,7 +100,7 @@ class PayWayNetForm extends PaymentOffsiteForm {
     $payment_gateway_plugin = $payment->getPaymentGateway()->getPlugin();
     $configuration = $payment_gateway_plugin->getConfiguration();
 
-    $pwNetBaseUrl = $configuration['commerce_payway_net_payWayBaseUrl'];
+    $pwNetBaseUrl = $configuration['commerce_payway_net_payway_baseUrl'];
 
     // 1. Generate token.
     // www.payway.com.au/RequestToken.
@@ -108,14 +108,14 @@ class PayWayNetForm extends PaymentOffsiteForm {
       $client = $payment_gateway_plugin->getClient();
       $response = $client->request('POST', $pwNetBaseUrl . 'RequestToken', [
         'form_params' => [
-          'biller_code' => $configuration['commerce_payway_net_billerCode'],
+          'biller_code' => $configuration['commerce_payway_net_biller_code'],
           'username' => $configuration['commerce_payway_net_username'],
           'password' => $configuration['commerce_payway_net_password'],
           'payment_reference' => $order->id(),
           'payment_amount' => $order->getTotalPrice()->getNumber(),
           'return_link_url' => $base_url . '/payment/notify/payway_net',
           'merchant_id' => $configuration['commerce_payway_net_merchandId'],
-          'paypal_email' => $configuration['commerce_payway_net_paypalEmail'],
+          'paypal_email' => $configuration['commerce_payway_net_paypal_email'],
         ],
       ]);
     }
