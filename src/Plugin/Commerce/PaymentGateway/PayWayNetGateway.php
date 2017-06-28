@@ -3,7 +3,6 @@
 namespace Drupal\commerce_payway_net\Plugin\Commerce\PaymentGateway;
 
 use Drupal\commerce_order\Entity\Order;
-use Drupal\commerce_payment\Annotation\CommercePaymentGateway;
 use Drupal\commerce_payment\PaymentMethodTypeManager;
 use Drupal\commerce_payment\PaymentTypeManager;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\OffsitePaymentGatewayBase;
@@ -16,7 +15,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-
 
 /**
  * Provides the PayWay Frame payment gateway.
@@ -38,7 +36,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
   private $client;
 
   /**
-   * @inheritdoc.
+   * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, PaymentTypeManager $payment_type_manager, PaymentMethodTypeManager $payment_method_type_manager, Client $client) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $payment_type_manager, $payment_method_type_manager);
@@ -47,7 +45,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
   }
 
   /**
-   * @inheritdoc.
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
@@ -62,7 +60,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
   }
 
   /**
-   * @inheritdoc.
+   * {@inheritdoc}
    */
   public function defaultConfiguration() {
     return [
@@ -91,27 +89,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
   }
 
   /**
-   * Form constructor.
-   *
-   * Plugin forms are embedded in other forms. In order to know where the plugin
-   * form is located in the parent form, #parents and #array_parents must be
-   * known, but these are not available during the initial build phase. In order
-   * to have these properties available when building the plugin form's
-   * elements, let this method return a form element that has a #process
-   * callback and build the rest of the form in the callback. By the time the
-   * callback is executed, the element's #parents and #array_parents properties
-   * will have been set by the form API. For more documentation on #parents and
-   * #array_parents, see \Drupal\Core\Render\Element\FormElement.
-   *
-   * @param array $form
-   *   An associative array containing the initial structure of the plugin form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form. Calling code should pass on a subform
-   *   state created through
-   *   \Drupal\Core\Form\SubformState::createForSubform().
-   *
-   * @return array
-   *   The form structure.
+   * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
@@ -152,12 +130,12 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
       '#required' => TRUE,
     );
     /*$form['commerce_payway_net_caCertsFile'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Path to cacerts.crt file'),
-      '#size' => 80,
-      '#description' => t('eg. /home/username/dev/certs/cacerts.crt'),
-      '#default_value' => $settings['commerce_payway_net_caCertsFile'],
-        // '#required' => TRUE,.
+    '#type' => 'textfield',
+    '#title' => t('Path to cacerts.crt file'),
+    '#size' => 80,
+    '#description' => t('eg. /home/username/dev/certs/cacerts.crt'),
+    '#default_value' => $settings['commerce_payway_net_caCertsFile'],
+    // '#required' => TRUE,.
     );*/
     $form['commerce_payway_net_merchant_id'] = array(
       '#type' => 'textfield',
@@ -188,30 +166,14 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
   }
 
   /**
-   * Form validation handler.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the plugin form as built
-   *   by static::buildConfigurationForm().
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form. Calling code should pass on a subform
-   *   state created through
-   *   \Drupal\Core\Form\SubformState::createForSubform().
+   * {@inheritdoc}
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::validateConfigurationForm($form, $form_state);
   }
 
   /**
-   * Form submission handler.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the plugin form as built
-   *   by static::buildConfigurationForm().
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form. Calling code should pass on a subform
-   *   state created through
-   *   \Drupal\Core\Form\SubformState::createForSubform().
+   * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
@@ -223,7 +185,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
       $this->configuration['commerce_payway_net_biller_code'] = $values['commerce_payway_net_biller_code'];
       $this->configuration['commerce_payway_net_username'] = $values['commerce_payway_net_username'];
       $this->configuration['commerce_payway_net_password'] = $values['commerce_payway_net_password'];
-      //$this->configuration['commerce_payway_net_caCertsFile'] = $values['commerce_payway_net_caCertsFile'];
       $this->configuration['commerce_payway_net_merchant_id'] = $values['commerce_payway_net_merchant_id'];
       $this->configuration['commerce_payway_net_paypal_email'] = $values['commerce_payway_net_paypal_email'];
       $this->configuration['commerce_payway_net_payway_baseUrl'] = $values['commerce_payway_net_payway_baseUrl'];
@@ -233,13 +194,12 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function onNotify(Request $request) {
     parent::onNotify($request);
 
     $configuration = $this->configuration;
-    $payment_storage = $this->entityTypeManager->getStorage('commerce_payment');
 
     // Process params returned by the bank.
     if (isset($_REQUEST['EncryptedParameters'])) {
@@ -303,7 +263,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
       return new RedirectResponse($url->toString());
 
     }
-    return null;
+    return NULL;
   }
 
   /**
@@ -313,7 +273,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
    *   The order which needs to be modified.
    */
   private function updateOrderToComplete(Order $order) {
-    //TODO: inject Drupal::time() from the constructor.
     $order->set('state', 'completed');
     $order->set('placed', \Drupal::time()->getRequestTime());
     $order->set('completed', \Drupal::time()->getRequestTime());
@@ -329,7 +288,8 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
    *   The decrypted query string.
    * @param Order $order
    *   The order attached to the payment.
-   * @param $status
+   * @param string $status
+   *   The status of the payment.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Core\Entity\EntityStorageException
@@ -338,7 +298,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
     $payment_storage = $this->entityTypeManager->getStorage('commerce_payment');
     $amountPaid = new Price($result['payment_amount'], 'AUD');
 
-    //TODO: inject Drupal::time() from the constructor.
     $payment = $payment_storage->create([
       'state' => $status,
       'amount' => $amountPaid,
@@ -415,7 +374,10 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
   }
 
   /**
+   * Getter for client.
+   *
    * @return \GuzzleHttp\Client
+   *   Guzzle client.
    */
   public function getClient() {
     return $this->client;
