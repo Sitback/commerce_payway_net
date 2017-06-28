@@ -154,14 +154,14 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
       '#default_value' => $settings['commerce_payway_net_password'],
       '#required' => TRUE,
     );
-    $form['commerce_payway_net_caCertsFile'] = array(
+    /*$form['commerce_payway_net_caCertsFile'] = array(
       '#type' => 'textfield',
       '#title' => t('Path to cacerts.crt file'),
       '#size' => 80,
       '#description' => t('eg. /home/username/dev/certs/cacerts.crt'),
       '#default_value' => $settings['commerce_payway_net_caCertsFile'],
         // '#required' => TRUE,.
-    );
+    );*/
     $form['commerce_payway_net_merchantId'] = array(
       '#type' => 'textfield',
       '#title' => t('Merchant Id'),
