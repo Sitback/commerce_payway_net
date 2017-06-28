@@ -57,6 +57,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
       $container->get('plugin.manager.commerce_payment_method_type'),
       $container->get('http_client')
     );
+
   }
 
   /**
@@ -195,6 +196,9 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
 
   /**
    * {@inheritdoc}
+   *
+   * @throws HardDeclineException
+   * @throws \InvalidArgumentException
    */
   public function onNotify(Request $request) {
     parent::onNotify($request);
@@ -210,6 +214,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
 
       $result = $this->payWayDecryptParameters($key, $encryptedParameters, $signature);
 
+      /* @var OrderInterface */
       $order = Order::load($result['payment_reference']);
 
       switch ($result['payment_status']) {
@@ -218,41 +223,23 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
           $this->updatePayment($result, $order, 'capture_completed');
           // Update the order.
           $this->updateOrderToComplete($order);
-          // Redirect to /checkout/[order_id]/complete.
-          drupal_set_message(t('Payment was processed'));
+
+          // This response will call onReturn().
           $params = [
             'commerce_order' => $order->id(),
-            'step' => 'complete',
+            'step' => 'payment',
           ];
-          $url = Url::fromRoute('commerce_checkout.form', $params);
+          $url = Url::fromRoute('commerce_payment.checkout.return', $params);
 
           break;
 
         case 'declined':
-          // Redirect to /checkout/[order_id]/order_information.
-          drupal_set_message(t('Your payment have been declined. 
-                        You can try using another payment method.'), 'error');
+          // This response will call onCancel() from the parent class.
           $params = [
             'commerce_order' => $order->id(),
-            'step' => 'order_information',
+            'step' => 'payment',
           ];
-          $url = Url::fromRoute('commerce_checkout.form', $params);
-
-          break;
-
-        case 'pending':
-          // Possible case: payment is pending.
-          $this->updatePayment($result, $order, 'pending');
-          // Update the order.
-          $this->updateOrderToComplete($order);
-          // Redirect to /checkout/[order_id]/complete.
-          drupal_set_message(t('Payment is pending. Please proceed 
-                        to the payment'));
-          $params = [
-            'commerce_order' => $order->id(),
-            'step' => 'complete',
-          ];
-          $url = Url::fromRoute('commerce_checkout.form', $params);
+          $url = Url::fromRoute('commerce_payment.checkout.cancel', $params);
 
           break;
 
@@ -308,6 +295,7 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
       'authorized' => \Drupal::time()->getRequestTime(),
     ]);
     $payment->save();
+
   }
 
   /**
