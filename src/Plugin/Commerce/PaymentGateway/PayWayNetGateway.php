@@ -101,7 +101,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
     $form['commerce_payway_net_encryption_key'] = array(
       '#type' => 'textfield',
       '#title' => t('Encryption Key'),
-      '#size' => 80,
       '#description' => t('eg. 123456789'),
       '#default_value' => $settings['commerce_payway_net_encryption_key'],
       '#required' => TRUE,
@@ -109,7 +108,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
     $form['commerce_payway_net_biller_code'] = array(
       '#type' => 'textfield',
       '#title' => t('Biller Code'),
-      '#size' => 80,
       '#description' => t('eg. 123456'),
       '#default_value' => $settings['commerce_payway_net_biller_code'],
       '#required' => TRUE,
@@ -117,7 +115,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
     $form['commerce_payway_net_username'] = array(
       '#type' => 'textfield',
       '#title' => t('Username'),
-      '#size' => 80,
       '#description' => t('eg. K12345'),
       '#default_value' => $settings['commerce_payway_net_username'],
       '#required' => TRUE,
@@ -125,7 +122,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
     $form['commerce_payway_net_password'] = array(
       '#type' => 'textfield',
       '#title' => t('Password'),
-      '#size' => 80,
       '#description' => t('eg. abcdefghijk'),
       '#default_value' => $settings['commerce_payway_net_password'],
       '#required' => TRUE,
@@ -133,7 +129,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
     /*$form['commerce_payway_net_caCertsFile'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to cacerts.crt file'),
-    '#size' => 80,
     '#description' => t('eg. /home/username/dev/certs/cacerts.crt'),
     '#default_value' => $settings['commerce_payway_net_caCertsFile'],
     // '#required' => TRUE,.
@@ -141,7 +136,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
     $form['commerce_payway_net_merchant_id'] = array(
       '#type' => 'textfield',
       '#title' => t('Merchant Id'),
-      '#size' => 80,
       '#description' => t('eg. TEST'),
       '#default_value' => $settings['commerce_payway_net_merchant_id'],
       '#required' => TRUE,
@@ -149,7 +143,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
     $form['commerce_payway_net_paypal_email'] = array(
       '#type' => 'textfield',
       '#title' => t('PayPal email address'),
-      '#size' => 80,
       '#description' => t('eg. test@example.com'),
       '#default_value' => $settings['commerce_payway_net_paypal_email'],
       '#required' => TRUE,
@@ -157,7 +150,6 @@ class PayWayNetGateway extends OffsitePaymentGatewayBase implements ContainerFac
     $form['commerce_payway_net_payway_baseUrl'] = array(
       '#type' => 'textfield',
       '#title' => t('PayWay Base URL'),
-      '#size' => 80,
       '#description' => t('eg. https://www.payway.com.au/'),
       '#default_value' => $settings['commerce_payway_net_payway_baseUrl'],
       '#required' => TRUE,
